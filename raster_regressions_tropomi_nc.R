@@ -1,11 +1,11 @@
 
 library(raster)
 
-in_file  <- "G:/TROPOMI/esa/gridded/1deg/TROPOMI.ESA.SIF.201805-202109.global.clearsky.monthly.1deg.nc"
+in_file  <- "G:/TROPOMI/esa/gridded/20km/monthly/TROPOMI.ESA.SIF.201805-202109.global.clearsky.monthly.20km.nc"
 x_name   <- "NIRv"
 y_name   <- "SIF_743"
-out_dir  <- "G:/Russell/Projects/ChloFluo/raster_regressions/global_clearsky/SIF743_NIRv/1deg/monthly"
-out_name <- "TROPOMI_SIF743_vs_NIRv_1deg_monthly_global_clearsky_201805-202109"
+out_dir  <- "G:/Russell/Projects/ChloFluo/raster_regressions/global_clearsky/SIF743_NIRv/20km/monthly"
+out_name <- "TROPOMI.SIF743_vs_NIRv.201805-202109.global.clearsky.monthly.20km."
 f_name   <- NA # Filter by value. Example, error, std, or n. If none use NA.
 f_thresh <- 30 # Values => will be kept
 
