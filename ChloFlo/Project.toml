@@ -1,0 +1,4 @@
+name = "ChloFlo"
+uuid = "b1f00404-39ec-484b-a5bf-b8e2adf60705"
+authors = ["Russell Doughty <russell.doughty@ou.edu>"]
+version = "0.1.0"

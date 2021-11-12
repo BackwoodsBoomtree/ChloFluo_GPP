@@ -9,6 +9,8 @@
 #
 ###############################################################################
 
-function max_lswi!(
-    file_list
-)
+function max_lswi(file::String)
+    println(file)
+end
+
+max_lswi("okay")
