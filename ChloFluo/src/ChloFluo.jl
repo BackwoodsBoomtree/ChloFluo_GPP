@@ -1,4 +1,4 @@
-module ChloFlo
+module ChloFluo
 
 greet() = print("Hello World!")
 

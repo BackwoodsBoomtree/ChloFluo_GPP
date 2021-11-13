@@ -15,7 +15,7 @@ using Statistics
 using Colors, Plots
 
 input_nc  = "/mnt/g/MCD43C4/nc/8-day/0.05/LSWI/MCD43C4.A.2018.LSWI.8-day.0.05.nc";
-output_nc = "/mnt/g/ChloFlo/input/LSWImax/5km/LSWImax.8-day.5km.2018.nc";
+output_nc = "/mnt/g/ChloFluo/input/LSWImax/5km/LSWImax.8-day.5km.2018.nc";
 
 # Get maximum lswi
 function max_lswi(file::String)
@@ -63,8 +63,8 @@ end
 function save_nc(data, path)
     ds = Dataset(path, "c")
 
-    defDim(ds,"lon", size(ts_data)[2])
-    defDim(ds,"lat", size(ts_data)[1])
+    defDim(ds,"lon", size(data)[2])
+    defDim(ds,"lat", size(data)[1])
 
     ds.attrib["title"] = "Maximum LSWI"
 
@@ -80,8 +80,9 @@ end
 
 data = max_lswi(input_nc);
 
+# datac = rotl90(data)
+
 # Take a look
-plot_data = replace(data, missing => NaN);
-heatmap(plot_data[:,:,1], clim = (-0.5, 0.5), bg = :white, color = :viridis)
+heatmap(datac[:,:,1], clim = (-0.5, 0.5), bg = :white, color = :viridis)
 
 save_nc(data, output_nc)
