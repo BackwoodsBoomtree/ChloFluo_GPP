@@ -1,6 +1,12 @@
 # ChloFluo_GPP
 World's First SIF-based LUE GPP Model
 
+## Possible Future Improvements or Considerations
+
+* VPM uses a complex method to derive LSWImax that involves determining the SOS and EOS for each pixel using night time temp. I did not implement this scheme here because:
+  1. The maps with and without the scheme were very, very similar
+  2. I want to let SIF be more deterministic of the SOS and EOS by not constraining SIF-driven GPP using night time temp. 
+
 ## NOTES
 
 ### For converting 0.05 degree NC files to 1 degree, use cdo:
