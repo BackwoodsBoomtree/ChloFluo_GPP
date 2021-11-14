@@ -4,7 +4,7 @@ World's First SIF-based LUE GPP Model
 ## Possible Future Improvements or Considerations
 
 * VPM uses a complex method to derive LSWImax that involves determining the SOS and EOS for each pixel using night time temp. I did not implement this scheme here because:
-  1. The maps with and without the scheme were very, very similar
+  1. The maps with and without the scheme were very, very similar (I compared merged LSWImax at HD that was already available in the VPM folder to my 1 degree calculations).
   2. I want to let SIF be more deterministic of the SOS and EOS by not constraining SIF-driven GPP using night time temp. 
 
 ## NOTES
