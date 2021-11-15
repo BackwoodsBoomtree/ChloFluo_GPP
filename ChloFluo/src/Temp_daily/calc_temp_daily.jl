@@ -2,11 +2,11 @@
 #
 # Calculate Average Daytime Temperature for each year for Tscalar 
 #
-# Input are ERA5 temperature data, which are annual.
+# Input are ERA5 2m air temperature data, which are hourly.
 # Source:
 # https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-single-levels?tab=form
 #
-# Output is one file for each year. Temps converted from K to C
+# Output is one file for each year with temps converted from K to C.
 #
 ###############################################################################
 
@@ -16,23 +16,25 @@ using Statistics
 using Dates
 # using Colors, Plots
 
-input_nc  = "/mnt/g/ChloFluo/input/Temp/era/Temp.ERA.2019.nc";
-output_nc = "/mnt/g/ChloFluo/input/Temp/daytime/25km/8day/Temp.mean.daytime.8day.era.25km.2019.nc";
+input_nc  = "/mnt/g/ChloFluo/input/Temp/era/Temp.ERA.2018.nc";
+output_nc = "/mnt/g/ChloFluo/input/Temp/daytime/25km/8day/Temp.mean.daytime.8day.era.25km.2018.nc";
 
-# Get max of timeseries
+# Get mean daytime temperature for each day from hourly data 
 function calc_temp_day(infile::String)
 
     temp_data = Dataset(infile)["t2m"]
 
-    # Calculates day time temp for each day
+    # Calculates daytime temp for each day
     temp_daytime = zeros(Float32, size(temp_data)[1], size(temp_data)[2], Int(size(temp_data)[3] / 24));
     doy = 0;
+
     for i in 1:24:size(temp_data)[3]
         doy = doy + 1
         println("Processing daily data for ", doy, " of ", Int(size(temp_data)[3] / 24))
         temp_in  = temp_data[:,:,i:(i+23)]
         temp_out = zeros(Float32, size(temp_in)[1], size(temp_in)[2])
         
+        # Get min and max values for each gridcell in each day
         for row in 1:size(temp_in)[1] 
             for col in 1:size(temp_in)[2]
                 vals = zeros(0)
@@ -82,12 +84,13 @@ function calc_temp_day(infile::String)
     # Convert to C
     temp_8day = temp_8day .- Float32(273.15)
     temp_8day = mapslices(rotl90, temp_8day, dims = [1,2])
-    return(temp_8day)
 
+    return(temp_8day)
 end
 
 function save_nc(infile::String, data, path)
     
+    # Create output nc file and build attribs and vars
     ds = Dataset(path, "c")
 
     ds.attrib["title"]    = "Mean Daytime Temperature for ChloFluo"
@@ -104,12 +107,12 @@ function save_nc(infile::String, data, path)
     defDim(ds, "lat", length(lat))
     defDim(ds, "lon", length(lon))
 
-    dsTime    = defVar(ds, "time" ,Float32,("time",), attrib = ["units" => "days since 1970-01-01","long_name" => "Time (UTC), start of interval"])
-    dsLat     = defVar(ds, "lat" , Float32,("lat",), attrib = ["units" => "degrees_north", "long_name" => "Latitude"])
-    dsLon     = defVar(ds, "lon" , Float32,("lon",), attrib = ["units" => "degrees_east", "long_name" => "Longitude"])
+    dsTime = defVar(ds, "time" ,Float32,("time",), attrib = ["units" => "days since 1970-01-01","long_name" => "Time (UTC), start of interval"])
+    dsLat  = defVar(ds, "lat" , Float32,("lat",), attrib = ["units" => "degrees_north", "long_name" => "Latitude"])
+    dsLon  = defVar(ds, "lon" , Float32,("lon",), attrib = ["units" => "degrees_east", "long_name" => "Longitude"])
     
-    # Build list of dates from original input date (hourly to 8-day)
-    hours = Dataset(infile)["time"][:,:] # Get dates from lswi time series
+    # Build list of dates from original input data (hourly to 8-day)
+    hours = Dataset(infile)["time"][:,:]
     days  = Vector{Dates.DateTime}(undef, 0)
     days8 = Vector{Dates.DateTime}(undef, 0)
     for i in 1:24:length(hours)
