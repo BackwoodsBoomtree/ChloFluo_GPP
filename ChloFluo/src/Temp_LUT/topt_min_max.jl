@@ -13,10 +13,10 @@ using NCDatasets
 using StatsBase
 # using Colors, Plots
 
-input_hdf  = "/mnt/g/ChloFluo/input/landcover/mcd12c1/MCD12C1.A2018001.006.2019200161458.hdf";
-output_opt = "/mnt/g/ChloFluo/input/Temp/opt/5km/topt.5km.2018.nc";
-output_min = "/mnt/g/ChloFluo/input/Temp/min/5km/tmin.5km.2018.nc";
-output_max = "/mnt/g/ChloFluo/input/Temp/max/5km/tmax.5km.2018.nc";
+input_hdf  = "/mnt/g/ChloFluo/input/landcover/mcd12c1/MCD12C1.A2019001.006.2020220162300.hdf";
+output_opt = "/mnt/g/ChloFluo/input/Temp/opt/5km/topt.5km.2019.nc";
+output_min = "/mnt/g/ChloFluo/input/Temp/min/5km/tmin.5km.2019.nc";
+output_max = "/mnt/g/ChloFluo/input/Temp/max/5km/tmax.5km.2019.nc";
 
 LUToptT = Dict([(0 => 30), (1 => 20), (2 => 28), (3 => 20), (4 => 20), (5 => 19), (6 => 25), (7 => 31), (8 => 24), (9 => 30), (10 => 27), (11 => 20), (12 => 30), (13 => 27), (14 => 27), (15 => 20), (16 => 30)]);
 LUTminT = Dict([(0 => 0), (1 => -1), (2 => 2), (3 => -1), (4 => -1), (5 => -1), (6 => -1), (7 => 1), (8 => -1), (9 => 1), (10 => 0), (11 => 0), (12 => -1), (13 => -1), (14 => 0), (15 => 0), (16 => 0)]);
