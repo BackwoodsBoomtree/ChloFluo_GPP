@@ -3,8 +3,6 @@
 # Determine Topt, Tmin, and Tmax 
 #
 # Input is MCD12C1 using IGBP majority land cover layer
-# Source:
-# https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-single-levels?tab=form
 #
 # Output is one file for each year for each Topt, Tmin, and Tmax.
 #
