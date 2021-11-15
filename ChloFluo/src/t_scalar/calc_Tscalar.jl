@@ -11,13 +11,13 @@
 using NCDatasets
 using DataStructures
 using Statistics
-using Colors, Plots
+# using Colors, Plots
 
-tday_file = "/mnt/g/ChloFluo/input/Temp/daytime/1deg/8day/Temp.mean.daytime.8day.era.1deg.2018.nc";
-topt_file = "/mnt/g/ChloFluo/input/Temp/opt/1deg/topt.1deg.2018.nc";
-tmin_file = "/mnt/g/ChloFluo/input/Temp/min/1deg/tmin.1deg.2018.nc";
-tmax_file = "/mnt/g/ChloFluo/input/Temp/max/1deg/tmax.1deg.2018.nc";
-output_nc = "/mnt/g/ChloFluo/input/tscalar/1deg/tscalar.8-day.1deg.2018.nc";
+tday_file = "/mnt/g/ChloFluo/input/Temp/daytime/1deg/8day/Temp.mean.daytime.8day.era.1deg.2020.nc";
+topt_file = "/mnt/g/ChloFluo/input/Temp/opt/1deg/topt.1deg.2019.nc";
+tmin_file = "/mnt/g/ChloFluo/input/Temp/min/1deg/tmin.1deg.2019.nc";
+tmax_file = "/mnt/g/ChloFluo/input/Temp/max/1deg/tmax.1deg.2019.nc";
+output_nc = "/mnt/g/ChloFluo/input/tscalar/1deg/tscalar.8-day.1deg.2020.nc";
 
 # Calc wscalar for teach time step and return 3d array
 function calc_tscalar(tday, topt, tmin, tmax)
@@ -31,7 +31,7 @@ function calc_tscalar(tday, topt, tmin, tmax)
     
     tscalar_stack = zeros(Float32, size(tday))
     for i in 1:size(tday)[3]
-        println("Processing 8-day data for ", doy, " of 46")
+        println("Processing 8-day data for ", i, " of 46")
         tscalar = ((tday[:,:,i] .- tmax) .* (tday[:,:,i] .- tmin)) ./ (((tday[:,:,i] .- tmax) .* (tday[:,:,i] .- tmin)) .- ((tday[:,:,i] .- topt) .* (tday[:,:,i] .- topt)))
         tscalar[tscalar .> 1.0] .= 1.0
         tscalar[tscalar .< 0.0] .= 0.0
@@ -79,4 +79,4 @@ tscalar = calc_tscalar(tday_file, topt_file, tmin_file, tmax_file)
 save_nc(tday_file, tscalar, output_nc);
 
 # Take a look
-heatmap(tscalar[:,:,23], bg = :white, color = :viridis)
+# heatmap(tscalar[:,:,23], bg = :white, color = :viridis)
