@@ -20,10 +20,7 @@ output_nc  = "/mnt/g/ChloFluo/input/wscalar/1deg/wscalar.8-day.1deg.2018.nc";
 
 # Calc wscalar for teach time step and return 3d array
 function calc_wscalar(lswi::String, lswi_max::String)
-    
-    dates = Dataset(lswi)["time"]
-    dates = dates[:,:]
-    
+       
     lswi     = Dataset(lswi)["LSWI"]
     lswi_max = Dataset(lswi_max)["LSWImax"]
     lswi     = reverse(mapslices(rotl90, lswi, dims = [1,2]), dims = 1)  # Rotate and reverse to correct lat/lon
@@ -33,6 +30,7 @@ function calc_wscalar(lswi::String, lswi_max::String)
 
     wscalar_stack = zeros(Float32, size(lswi))
     for i in 1:size(lswi)[3]
+        println("Processing 8-day data for ", doy, " of 46")
         wscalar = (lswi[:,:,i] .+ 1.0) ./ (lswi_max[:,:] .+ 1.0)
         wscalar[wscalar .> 1.0] .= 1.0
         wscalar[wscalar .< 0.0] .= 0.0
