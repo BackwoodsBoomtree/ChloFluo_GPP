@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# Determine LUE
+# Determine LUEmax
 #
 # Input is MCD12C1 and ISLSCP II
 #
