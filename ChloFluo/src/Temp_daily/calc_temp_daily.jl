@@ -1,12 +1,12 @@
 ###############################################################################
 #
-# Calculate Average Day Time Temperature for each year for Tscalar 
+# Calculate Average Daytime Temperature for each year for Tscalar 
 #
 # Input are ERA5 temperature data, which are annual.
 # Source:
 # https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-single-levels?tab=form
 #
-# Output is one file for each year.
+# Output is one file for each year. Temps converted from K to C
 #
 ###############################################################################
 
@@ -14,10 +14,10 @@ using NCDatasets
 using DataStructures
 using Statistics
 using Dates
-using Colors, Plots
+# using Colors, Plots
 
-input_nc  = "/mnt/g/ChloFluo/input/Temp/era/Temp.ERA.2018.nc";
-output_nc = "/mnt/g/ChloFluo/input/Temp/daytime/25km/8day/Temp.mean.8day.era.25km.2018.nc";
+input_nc  = "/mnt/g/ChloFluo/input/Temp/era/Temp.ERA.2019.nc";
+output_nc = "/mnt/g/ChloFluo/input/Temp/daytime/25km/8day/Temp.mean.daytime.8day.era.25km.2019.nc";
 
 # Get max of timeseries
 function calc_temp_day(infile::String)
@@ -29,6 +29,7 @@ function calc_temp_day(infile::String)
     doy = 0;
     for i in 1:24:size(temp_data)[3]
         doy = doy + 1
+        println("Processing daily data for ", doy, " of ", Int(size(temp_data)[3] / 24))
         temp_in  = temp_data[:,:,i:(i+23)]
         temp_out = zeros(Float32, size(temp_in)[1], size(temp_in)[2])
         
@@ -53,7 +54,7 @@ function calc_temp_day(infile::String)
     doy = 0;
     for i in 1:8:size(temp_daytime)[3]
         doy = doy + 1
-        println(doy)
+        println("Processing 8-day data for ", doy, " of 46")
 
         # Last day is 5 or 6 days
         if doy != 46
@@ -95,8 +96,9 @@ function save_nc(infile::String, data, path)
     ds.attrib["source"]   = "ERA5"
 
     latres = 180 / size(data)[1]
-    lat = collect(-90.0 + (res / 2.0) : res : 90.0 - (res / 2.0))
-    lon = collect(-180.0 + (res / 2.0) : res : 180.0 - (res / 2.0))
+    lonres = 360 / size(data)[2]
+    lat = collect(-90.0 + (latres / 2.0) : latres : 90.0 - (latres / 2.0))
+    lon = collect(-180.0 + (lonres / 2.0) : lonres : 180.0 - (lonres / 2.0))
 
     defDim(ds, "time", size(data)[3])
     defDim(ds, "lat", length(lat))
@@ -107,7 +109,7 @@ function save_nc(infile::String, data, path)
     dsLon     = defVar(ds, "lon" , Float32,("lon",), attrib = ["units" => "degrees_east", "long_name" => "Longitude"])
     
     # Build list of dates from original input date (hourly to 8-day)
-    hours = Dataset(input_nc)["time"][:,:] # Get dates from lswi time series
+    hours = Dataset(infile)["time"][:,:] # Get dates from lswi time series
     days  = Vector{Dates.DateTime}(undef, 0)
     days8 = Vector{Dates.DateTime}(undef, 0)
     for i in 1:24:length(hours)
@@ -121,7 +123,7 @@ function save_nc(infile::String, data, path)
     dsLat[:]  = lat
     dsLon[:]  = lon
 
-    v = defVar(ds, "wscalar", Float32, ("time", "lat", "lon"), deflatelevel = 4, fillvalue = -9999, attrib = ["units" => "Index", "long_name" => "Water Scalar"])
+    v = defVar(ds, "t2m_daytime", Float32, ("time", "lat", "lon"), deflatelevel = 4, fillvalue = -9999, attrib = ["units" => "C", "long_name" => "Mean Daytime 2m Air Temperature"])
 
     # NC convention follows [z, y, x]
     for t in 1:size(data)[3]
@@ -132,9 +134,7 @@ function save_nc(infile::String, data, path)
 end
 
 temp_out = calc_temp_day(input_nc)
-save_nc(lswi_nc, temp_out, output_nc)
+save_nc(input_nc, temp_out, output_nc)
 
 # Take a look
-heatmap(temp_8day[:,:,23], bg = :white, color = :viridis)
-
-temp_day(input_nc)
+#heatmap(temp_out[:,:,23], bg = :white, color = :viridis)
