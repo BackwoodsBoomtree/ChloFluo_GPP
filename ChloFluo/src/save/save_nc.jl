@@ -66,4 +66,5 @@ function save_nc(data, path, year, var_sname, var_lname, unit)
     end
 
     close(ds)
+    println("Output saved to " * path)
 end
