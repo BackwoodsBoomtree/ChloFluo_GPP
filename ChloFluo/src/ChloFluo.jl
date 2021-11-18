@@ -14,33 +14,23 @@ using Statistics
 using Dates
 # using Colors, Plots
 
-sif_file    = "/mnt/g/TROPOMI/esa/gridded/1deg/8day/TROPOMI.ESA.SIF.201805-202109.global.8day.1deg.CF80.nc";
-yield_file  = "/mnt/g/ChloFluo/input/yield/1deg/yield.2019.8-day.1deg.nc";
+apar_file  = "/mnt/g/ChloFluo/input/yield/1deg/yield.2019.8-day.1deg.nc";
 stress_file = "/mnt/g/ChloFluo/input/stress/1deg/stress.8-day.1deg.2019.nc";
 lue_file    = "/mnt/g/ChloFluo/input/LUE/1deg/LUEmax.1deg.nc";
 output_nc   = "/mnt/g/ChloFluo/product/v01/1deg/ChloFluo.GPP.v01.1deg.CF80.2019.nc";
 
-function calc_gpp(sif, yield, stress, lue)
-    sif    = Dataset(sif)["SIF_Corr_743"]
-    yield  = Dataset(yield)["SIFyield"]
+function calc_gpp(apar, stress, lue)
+    apar   = Dataset(apar)["aparchl"]
     stress = Dataset(stress)["stress"]
     lue    = Dataset(lue)["LUEmax"]
 
     # Arrange rasters dims to match
-    sif    = sif[:,:,32:77]; # 2019
-    sif    = reverse(mapslices(rotl90, sif, dims = [1,2]), dims = 1);  # Rotate and reverse to correct lat/lon
-    yield = permutedims(yield, [2,3,1])
-    yield = replace!(yield, missing => NaN)
+    apar   = permutedims(apar, [2,3,1])
+    apar   = replace!(apar, missing => NaN)
     stress = permutedims(stress, [2,3,1])
     stress = replace!(stress, missing => NaN)
     lue    = lue[:,:,:]
     lue    = replace!(lue, missing => NaN)
-
-    apar             = sif ./ yield;
-    apar             = replace!(apar, missing => 0);
-    apar[apar .< 0] .= 0;
-
-
 
     gpp_stack = zeros(Float32, size(apar))
     for i in 1:size(apar)[3]
@@ -56,7 +46,7 @@ function save_nc(infile, data, path)
     ds = Dataset(path, "c")
 
     ds.attrib["title"]    = "ChloFluo GPP"
-    ds.attrib["comments"] = "SIF-based, Data-drive GPP"
+    ds.attrib["comments"] = "SIF-based, Data-driven GPP"
     ds.attrib["author"]   = "Russell Doughty, PhD"
     ds.attrib["source"]   = "University of Oklahoma"
 
@@ -85,8 +75,8 @@ function save_nc(infile, data, path)
     close(ds)
 end
 
-gpp = calc_gpp(sif_file, yield_file, stress_file, lue_file);
-save_nc(stress_file, gpp, output_nc)
+gpp = calc_gpp(apar_file, stress_file, lue_file);
+save_nc(apar_file, gpp, output_nc)
 
 # Take a look
 heatmap(lue[:,:,23], bg = :white, color = :viridis)
