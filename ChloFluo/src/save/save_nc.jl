@@ -19,7 +19,7 @@ function save_nc(data, path, year, var_sname, var_lname, unit)
     ds.attrib["author"]   = "Russell Doughty, PhD"
 
     latres = 180 / size(data)[1]
-    latres = 360 / size(data)[2]
+    lonres = 360 / size(data)[2]
     lat = collect(-90.0 + (latres / 2.0) : latres : 90.0 - (latres / 2.0))
     lon = collect(-180.0 + (lonres / 2.0) : lonres : 180.0 - (lonres / 2.0))
 

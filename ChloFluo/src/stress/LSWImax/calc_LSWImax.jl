@@ -12,6 +12,7 @@
 using NCDatasets
 using DataStructures
 using Statistics
+include("save/save_nc.jl")
 # using Colors, Plots
 
 input_nc  = "/mnt/g/ChloFluo/input/LSWI/1deg/MCD43C4.A.2020.LSWI.8-day.1deg.nc";
@@ -58,41 +59,6 @@ function max_time(ts_data)
     amax[isnan.(amax)]    .= -9999
     amax = rotl90(amax)                # Rotate to correct lat/lon
     return(amax)
-end
-
-function save_nc(data, path)
-    
-    ds = Dataset(path, "c")
-
-    ds.attrib["title"]    = "Maximum LSWI"
-    ds.attrib["comments"] = "Data computed for ChloFlo model."
-    ds.attrib["author"]   = "Russell Doughty, PhD"
-    ds.attrib["source"]   = "MCD43C4"
-
-    res = 180 / size(data)[1]
-    lat = collect(-90.0 + (res / 2.0) : res : 90.0 - (res / 2.0))
-    lon = collect(-180.0 + (res / 2.0) : res : 180.0 - (res / 2.0))
-
-    defDim(ds,"lon", length(lon))
-    defDim(ds,"lat", length(lat))
-
-    dsLon    = defVar(ds, "lon" , Float32,("lon",), attrib = ["units" => "degrees_east", "long_name" => "Longitude"])
-    dsLat    = defVar(ds, "lat" , Float32,("lat",), attrib = ["units" => "degrees_north", "long_name" => "Latitude"])
-    dsLon[:] = lon
-    dsLat[:] = lat
-
-    v = defVar(ds, "LSWImax", Float32, ("lat","lon"), deflatelevel = 4, fillvalue = -9999, attrib = ["units" => "Index", "long_name" => "LSWImax"])
-
-    # Scale value does not work
-    # v = defVar(ds, "LSWImax", Float32, ("lat","lon"), deflatelevel = 4, fillvalue = -9999, attrib = OrderedDict(
-    #     "long_name"    => "LSWImax",
-    #     "units"        => "Index",
-    #     "scale_factor" => Float32(0.0001),
-    #     "add_offset"   => Float32(0.0)))
-
-    v[:,:] = data
-
-    close(ds)
 end
 
 data = (max_lswi(input_nc, spat_res));

@@ -9,15 +9,19 @@
 ###############################################################################
 
 using NCDatasets
-using DataStructures
 using Statistics
 using Dates
 # using Colors, Plots
+include("save/save_nc.jl")
 
-apar_file  = "/mnt/g/ChloFluo/input/yield/1deg/yield.2019.8-day.1deg.nc";
+apar_file   = "/mnt/g/ChloFluo/input/APARchl/1deg/apar.2019.8-day.1deg.nc";
 stress_file = "/mnt/g/ChloFluo/input/stress/1deg/stress.8-day.1deg.2019.nc";
 lue_file    = "/mnt/g/ChloFluo/input/LUE/1deg/LUEmax.1deg.nc";
 output_nc   = "/mnt/g/ChloFluo/product/v01/1deg/ChloFluo.GPP.v01.1deg.CF80.2019.nc";
+year        = 2019
+var_sname   = "gpp"
+var_lname   = "Gross Primary Production"
+unit        = "g C/m⁻²/day⁻¹"
 
 function calc_gpp(apar, stress, lue)
     apar   = Dataset(apar)["aparchl"]
@@ -38,45 +42,13 @@ function calc_gpp(apar, stress, lue)
         gpp = apar[:,:,i] .* lue[:,:] .* stress[:,:,i]
         gpp_stack[:,:,i] = gpp
     end
-    return(gpp_stack)
+
+    save_nc(gpp_stack, output_nc, year, var_sname, var_lname, unit)
+    println("Output saved to " * output_nc)
+
 end
 
-function save_nc(infile, data, path)
-    
-    ds = Dataset(path, "c")
-
-    ds.attrib["title"]    = "ChloFluo GPP"
-    ds.attrib["comments"] = "SIF-based, Data-driven GPP"
-    ds.attrib["author"]   = "Russell Doughty, PhD"
-    ds.attrib["source"]   = "University of Oklahoma"
-
-    res = 180 / size(data)[1]
-    lat = collect(-90.0 + (res / 2.0) : res : 90.0 - (res / 2.0))
-    lon = collect(-180.0 + (res / 2.0) : res : 180.0 - (res / 2.0))
-
-    defDim(ds, "time", size(data)[3])
-    defDim(ds, "lat", length(lat))
-    defDim(ds, "lon", length(lon))
-
-    dsTime    = defVar(ds, "time" ,Float32,("time",), attrib = ["units" => "days since 1970-01-01","long_name" => "Time (UTC), start of interval"])
-    dsLat     = defVar(ds, "lat" , Float32,("lat",), attrib = ["units" => "degrees_north", "long_name" => "Latitude"])
-    dsLon     = defVar(ds, "lon" , Float32,("lon",), attrib = ["units" => "degrees_east", "long_name" => "Longitude"])
-    dsTime[:] = Dataset(infile)["time"][:,:] # Get dates from lswi time series
-    dsLat[:]  = lat
-    dsLon[:]  = lon
-
-    v = defVar(ds, "gpp", Float32, ("time", "lat", "lon"), deflatelevel = 4, fillvalue = -9999, attrib = ["units" => "gC/m-2/day-1", "long_name" => "Gross Primary Production"])
-
-    # NC convention follows [z, y, x]
-    for t in 1:size(data)[3]
-         v[t,:,:] = data[:,:,t]
-    end
-
-    close(ds)
-end
-
-gpp = calc_gpp(apar_file, stress_file, lue_file);
-save_nc(apar_file, gpp, output_nc)
+calc_gpp(apar_file, stress_file, lue_file);
 
 # Take a look
-heatmap(lue[:,:,23], bg = :white, color = :viridis)
+# heatmap(lue[:,:,23], bg = :white, color = :viridis)

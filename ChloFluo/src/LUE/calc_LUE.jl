@@ -16,6 +16,7 @@
 using NCDatasets
 using StatsBase
 using Colors, Plots
+include("save/save_nc.jl")
 
 # input_hdf  = "/mnt/g/ChloFluo/input/landcover/mcd12c1/MCD12C1.A2018001.006.2019200161458.hdf";
 c4_map     = "/mnt/g/ChloFluo/input/C3C4/ISLSCP/c4_percent_1d.nc";
@@ -34,34 +35,6 @@ c4_perc = replace!(c4_perc, missing => NaN)
 c4_perc = c4_perc / 100
 
 lue = (c4_perc .* 0.117) + ((1 .- c4_perc) .* 0.078)
-
-function save_nc(data, path, sname, lname)
-    
-    ds = Dataset(path, "c")
-
-    ds.attrib["title"]    = lname
-    ds.attrib["comments"] = "Data computed for ChloFlo model."
-    ds.attrib["author"]   = "Russell Doughty, PhD"
-    ds.attrib["source"]   = "MCD12C1 and LUT"
-
-    res = 180 / size(data)[1]
-    lat = collect(-90.0 + (res / 2.0) : res : 90.0 - (res / 2.0))
-    lon = collect(-180.0 + (res / 2.0) : res : 180.0 - (res / 2.0))
-
-    defDim(ds,"lon", length(lon))
-    defDim(ds,"lat", length(lat))
-
-    dsLon    = defVar(ds, "lon" , Float32,("lon",), attrib = ["units" => "degrees_east", "long_name" => "Longitude"])
-    dsLat    = defVar(ds, "lat" , Float32,("lat",), attrib = ["units" => "degrees_north", "long_name" => "Latitude"])
-    dsLon[:] = lon
-    dsLat[:] = lat
-
-    v = defVar(ds, sname, Float32, ("lat","lon"), deflatelevel = 4, fillvalue = -9999, attrib = ["units" => "-", "long_name" => lname])
-
-    v[:,:] = data
-
-    close(ds)
-end
 
 save_nc(lue, output_lue, "LUEmax", "Maximum Light Use Efficiency");
 
