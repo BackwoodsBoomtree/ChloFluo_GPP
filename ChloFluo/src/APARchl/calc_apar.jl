@@ -8,22 +8,25 @@
 ###############################################################################
 
 using NCDatasets
-using DataStructures
 using Statistics
-include("save/save_nc.jl")
+include("../save/save_nc.jl")
 # using Colors, Plots
 
-sif_file    = "/mnt/g/TROPOMI/esa/gridded/1deg/8day/TROPOMI.ESA.SIF.201805-202109.global.8day.1deg.CF80.nc";
+sif_file    = "/mnt/g/ChloFluo/input/SIF/1deg/SIFqc.8day.1deg.CF80.2019.nc";
 yield_file  = "/mnt/g/ChloFluo/input/yield/1deg/yield.2019.8-day.1deg.nc";
 output_nc   = "/mnt/g/ChloFluo/input/APARchl/1deg/apar.2019.8-day.1deg.nc";
+year        = 2019;
+var_sname   = "aparchl";
+var_lname   = "APARchl";
+unit        = "μmol/m⁻²/day⁻¹";
 
 function calc_apar(sif, yield)
-    sif    = Dataset(sif)["SIF_Corr_743"]
+    sif    = Dataset(sif)["sif743_qc"]
     yield  = Dataset(yield)["SIFyield"]
 
     # Arrange rasters dims to match
-    sif    = sif[:,:,32:77]; # 2019
-    sif    = reverse(mapslices(rotl90, sif, dims = [1,2]), dims = 1);  # Rotate and reverse to correct lat/lon
+    sif    = permutedims(sif, [2,3,1])
+    sif    = replace!(sif, missing => NaN)
     yield  = permutedims(yield, [2,3,1])
     yield  = replace!(yield, missing => NaN)
 
@@ -31,8 +34,7 @@ function calc_apar(sif, yield)
     apar             = replace!(apar, missing => NaN);
     apar[apar .< 0] .= NaN;
 
-    return(apar)
+    save_nc(apar, output_nc, year, var_sname, var_lname, unit)
 end
 
-apar = calc_apar(sif_file, yield_file);
-save_nc(yield_file, apar, output_nc)
+calc_apar(sif_file, yield_file);

@@ -10,7 +10,6 @@
 
 using NCDatasets
 using Statistics
-using Dates
 # using Colors, Plots
 include("save/save_nc.jl")
 
@@ -44,8 +43,6 @@ function calc_gpp(apar, stress, lue)
     end
 
     save_nc(gpp_stack, output_nc, year, var_sname, var_lname, unit)
-    println("Output saved to " * output_nc)
-
 end
 
 calc_gpp(apar_file, stress_file, lue_file);
