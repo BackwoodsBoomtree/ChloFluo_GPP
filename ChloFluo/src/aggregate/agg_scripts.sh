@@ -15,3 +15,5 @@ cdo -b f32 remapnn,gridfile_1.0.txt /mnt/g/ChloFluo/input/Temp/opt/5km/topt.5km.
 cdo -b f32 remapnn,gridfile_1.0.txt /mnt/g/ChloFluo/input/Temp/min/5km/tmin.5km.2019.nc /mnt/g/ChloFluo/input/Temp/min/1deg/tmin.1deg.2019.nc
 cdo -b f32 remapnn,gridfile_1.0.txt /mnt/g/ChloFluo/input/Temp/max/5km/tmax.5km.2019.nc /mnt/g/ChloFluo/input/Temp/max/1deg/tmax.1deg.2019.nc
 
+# Land cover
+cdo -b f32 remapnn,gridfile_1.0.txt /mnt/g/ChloFluo/input/landcover/MCD12C1.A2018.majority.nc /mnt/g/ChloFluo/input/landcover/MCD12C1.A2018.majority.1deg.nc

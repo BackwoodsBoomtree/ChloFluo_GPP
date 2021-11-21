@@ -10,7 +10,7 @@
 using NCDatasets
 using Dates
 
-function save_nc(data, path, year, var_sname, var_lname, unit)
+function save_nc(data, path, y, var_sname, var_lname, unit)
     
     ds = Dataset(path, "c")
 
@@ -37,21 +37,21 @@ function save_nc(data, path, year, var_sname, var_lname, unit)
 
     # Create list of dates
     if length(size(data)) == 3
-        n_days  = Dates.daysinyear(year)
+        n_days  = Dates.daysinyear(y)
         by_days = ceil(n_days / size(data)[3])
         days = Vector{Dates.DateTime}(undef, 0)
 
         for i in 1:by_days:n_days
             if i == 1
-                day  = Date(year, 1, 1)
+                day  = Date(y, 1, 1)
                 days = cat(days, day, dims = 1)
             else
-                day  = Date(year, 1, 1) + Dates.Day(i - 1)
+                day  = Date(y, 1, 1) + Dates.Day(i - 1)
                 days = cat(days, day, dims = 1)
             end
         end
     else
-        days = Date(year, 1, 1)
+        days = Date(y, 1, 1)
     end
 
     dsTime[:] = days

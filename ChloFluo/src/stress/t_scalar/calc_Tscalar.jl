@@ -11,7 +11,7 @@
 using NCDatasets
 using DataStructures
 using Statistics
-include("save/save_nc.jl")
+include("../../save/save_nc.jl")
 # using Colors, Plots
 
 tday_file = "/mnt/g/ChloFluo/input/Temp/daytime/1deg/8day/Temp.mean.daytime.8day.era.1deg.2020.nc";

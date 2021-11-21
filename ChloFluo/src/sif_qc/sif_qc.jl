@@ -37,10 +37,12 @@ function filter_sif(file)
     n      = replace!(n, missing => NaN)
     std    = replace!(std, missing => NaN)
 
+    # Determine good values using sif - sem
     sem    = std ./ sqrt.(n)
     good   = sif .- sem
     good[good .<= 0.0] .= NaN;
 
+    # Filter for good values
     for time in 1:size(sif)[3]       
         # Get mean for each gridcell in each day
         for row in 1:size(sif)[1] 
