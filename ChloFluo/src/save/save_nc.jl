@@ -3,8 +3,11 @@
 #
 # Save arrays to nc file
 #
-# 
+# Input data should already be in the correct orientation [y, x, z] aka
+# [lat, lon, time]. 
 #
+# For some reason, the julia package outputs nc files as [z, x, y] format,
+# so the end of this script forces [z, y, x] format using ncpdq
 ###############################################################################
 
 using NCDatasets
@@ -12,20 +15,6 @@ using Dates
 
 function save_nc(data, path, y, var_sname, var_lname, unit)
     
-    # Arrange data for [x, y, z], which will later be input into nc as [z, x, y]
-    # and finally permuted with ncpdq for proper [z, y, x] format
-    if length(size(data)) == 3
-        if size(data)[1] < size(data)[2]
-            data = permutedims(data, [2,1,3])
-            data = reverse(data, dims = 1)
-        end
-    else
-        if size(data)[1] < size(data)[2]
-            data = permutedims(data, [2,1])
-            data = reverse(data, dims = 1)
-        end
-    end
-
     # Create output nc
     ds = Dataset(path, "c")
 
@@ -33,8 +22,8 @@ function save_nc(data, path, y, var_sname, var_lname, unit)
     ds.attrib["comments"] = "Data computed for ChloFlo model."
     ds.attrib["author"]   = "Russell Doughty, PhD"
 
-    latres = 180 / size(data)[1]
-    lonres = 360 / size(data)[2]
+    latres = 180 / minimum(size(data))
+    lonres = 360 / maximum(size(data))
     lat    = collect(-90.0 + (latres / 2.0) : latres : 90.0 - (latres / 2.0))
     lon    = collect(-180.0 + (lonres / 2.0) : lonres : 180.0 - (lonres / 2.0))
 
@@ -70,13 +59,13 @@ function save_nc(data, path, y, var_sname, var_lname, unit)
     NCDict = Dict{String, NCDatasets.CFVariable}()
 
     if length(size(data)) == 3
-        NCDict[var_sname] = defVar(ds, var_sname, Float32, ("time", "lon", "lat"), deflatelevel = 4, fillvalue = -9999, attrib = ["units" => unit, "long_name" => var_lname])
+        NCDict[var_sname] = defVar(ds, var_sname, Float32, ("time", "lat", "lon"), deflatelevel = 4, fillvalue = -9999, attrib = ["units" => unit, "long_name" => var_lname])
         dsTime[:] = days
     else
-        NCDict[var_sname] = defVar(ds, var_sname, Float32, ("lon", "lat"), deflatelevel = 4, fillvalue = -9999, attrib = ["units" => unit, "long_name" => var_lname])
+        NCDict[var_sname] = defVar(ds, var_sname, Float32, ("lat", "lon"), deflatelevel = 4, fillvalue = -9999, attrib = ["units" => unit, "long_name" => var_lname])
     end
 
-    # NC convention follows [z, y, x]
+    # Write data to nc file
     if length(size(data)) == 3
         for t in 1:size(data)[3]
             NCDict[var_sname][t,:,:] = data[:,:,t]
@@ -87,7 +76,12 @@ function save_nc(data, path, y, var_sname, var_lname, unit)
 
     close(ds)
 
-    run(`ncpdq -a time,lat,lon -O $path $path`)
+    # Ensure NC convention: [z, y, x]
+    if length(size(data)) == 3
+        run(`ncpdq -a time,lat,lon -O $path $path`)
+    else
+        run(`ncpdq -a lat,lon -O $path $path`)
+    end
 
     println("Output saved to " * path)
 end
