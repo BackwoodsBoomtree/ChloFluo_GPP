@@ -22,8 +22,8 @@ function save_nc(data, path, y, var_sname, var_lname, unit)
     ds.attrib["comments"] = "Data computed for ChloFlo model."
     ds.attrib["author"]   = "Russell Doughty, PhD"
 
-    latres = 180 / minimum(size(data))
-    lonres = 360 / maximum(size(data))
+    latres = 180 / minimum(size(data)[1 : 2])
+    lonres = 360 / maximum(size(data)[1 : 2])
     lat    = collect(-90.0 + (latres / 2.0) : latres : 90.0 - (latres / 2.0))
     lon    = collect(-180.0 + (lonres / 2.0) : lonres : 180.0 - (lonres / 2.0))
 
