@@ -12,12 +12,6 @@
 #
 ###############################################################################
 
-# using GMT
-using NCDatasets
-using StatsBase
-# using Colors, Plots
-include("../save/save_nc.jl")
-
 c4_map     = "/mnt/g/ChloFluo/input/C3C4/ISLSCP/c4_percent_1d.nc";
 output_nc = "/mnt/g/ChloFluo/input/LUE/1deg/LUEmax.1deg.nc";
 y           = 2019;

@@ -8,11 +8,6 @@
 #
 ###############################################################################
 
-using NCDatasets
-using Statistics
-using Colors, Plots
-include("save/save_nc.jl")
-
 apar_file   = "/mnt/g/ChloFluo/input/APARchl/1deg/apar.2019.8-day.1deg.nc";
 stress_file = "/mnt/g/ChloFluo/input/stress/1deg/stress.8-day.1deg.2019.nc";
 lue_file    = "/mnt/g/ChloFluo/input/LUE/1deg/LUEmax.1deg.nc";

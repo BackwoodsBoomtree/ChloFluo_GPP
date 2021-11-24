@@ -10,9 +10,6 @@
 # so the end of this script forces [z, y, x] format using ncpdq
 ###############################################################################
 
-using NCDatasets
-using Dates
-
 function save_nc(data, path, y, var_sname, var_lname, unit)
     
     # Create output nc

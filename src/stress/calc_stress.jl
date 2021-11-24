@@ -8,12 +8,6 @@
 #
 ###############################################################################
 
-using NCDatasets
-using DataStructures
-using Statistics
-include("save/save_nc.jl")
-using Colors, Plots
-
 tfile     = "/mnt/g/ChloFluo/input/tscalar/1deg/tscalar.8-day.1deg.2020.nc";
 wfile     = "/mnt/g/ChloFluo/input/wscalar/1deg/wscalar.8-day.1deg.2020.nc";
 output_nc = "/mnt/g/ChloFluo/input/stress/1deg/stress.8-day.1deg.2020.nc";

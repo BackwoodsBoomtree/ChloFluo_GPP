@@ -7,11 +7,6 @@
 #
 ###############################################################################
 
-using NCDatasets
-using Colors, Plots
-
-include("../save/save_nc.jl")
-
 land_file   = "/mnt/g/ChloFluo/input/landcover/era5_land/original/ERA5.land-sea-mask.2020.nc";
 output_nc   = "/mnt/g/ChloFluo/input/landcover/era5_land/original/ERA5.land-sea-mask.2020_extracted.nc";
 resamp_nc   = "/mnt/g/ChloFluo/input/landcover/era5_land/1deg/ERA5.land-sea-mask.2020.1deg.nc";

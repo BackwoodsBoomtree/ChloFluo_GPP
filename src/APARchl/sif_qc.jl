@@ -8,10 +8,6 @@
 #
 ###############################################################################
 
-using NCDatasets
-using Statistics
-include("../save/save_nc.jl")
-#using Colors, Plots
 
 sif_file    = "/mnt/g/TROPOMI/esa/gridded/1deg/8day/TROPOMI.ESA.SIF.201805-202109.global.8day.1deg.CF80.nc";
 output_nc   = "/mnt/g/ChloFluo/input/SIF/1deg/SIFqc.8day.1deg.CF80.2019.nc";

@@ -10,12 +10,6 @@
 #
 ###############################################################################
 
-using NCDatasets
-using DataStructures
-using Statistics
-include("save/save_nc.jl")
-# using Colors, Plots
-
 input_nc  = "/mnt/g/ChloFluo/input/Temp/era/Temp.ERA.2018.nc";
 output_nc = "/mnt/g/ChloFluo/input/Temp/daytime/25km/8day/Temp.mean.daytime.8day.era.25km.2018.nc";
 

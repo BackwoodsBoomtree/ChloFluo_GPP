@@ -7,11 +7,6 @@
 #
 ###############################################################################
 
-using NCDatasets
-using Statistics
-include("../save/save_nc.jl")
-using Colors, Plots
-
 sif_file    = "/mnt/g/ChloFluo/input/SIF/1deg/SIFqc.8day.1deg.CF80.2019.nc";
 yield_file  = "/mnt/g/ChloFluo/input/yield/1deg/yield.2019.8-day.1deg.nc";
 output_nc   = "/mnt/g/ChloFluo/input/APARchl/1deg/apar.2019.8-day.1deg.nc";

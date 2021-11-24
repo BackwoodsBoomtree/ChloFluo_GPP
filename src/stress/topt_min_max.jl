@@ -8,12 +8,6 @@
 #
 ###############################################################################
 
-using GMT
-using NCDatasets
-using StatsBase
-include("save/save_nc.jl")
-# using Colors, Plots
-
 input_land   = "/mnt/g/ChloFluo/input/landcover/mcd12c1/MCD12C1.A2019001.006.2020220162300.hdf";
 input_c4veg  = 
 input_c4crop = 

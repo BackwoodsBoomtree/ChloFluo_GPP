@@ -9,12 +9,6 @@
 #
 ###############################################################################
 
-using NCDatasets
-using DataStructures
-using Statistics
-include("save/save_nc.jl")
-# using Colors, Plots
-
 lswi_nc    = "/mnt/g/ChloFluo/input/LSWI/1deg/MCD43C4.A.2018.LSWI.8-day.1deg.nc";
 lswimax_nc = "/mnt/g/ChloFluo/input/LSWImax/1deg/LSWImax.8-day.1deg.2018.nc";
 output_nc  = "/mnt/g/ChloFluo/input/wscalar/1deg/wscalar.8-day.1deg.2018.nc";
