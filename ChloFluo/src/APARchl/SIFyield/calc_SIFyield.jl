@@ -11,17 +11,30 @@
 using NCDatasets
 using DataStructures
 using Statistics
-include("save/save_nc.jl")
-using Colors, Plots
+using GriddingMachine
+include("../../save/save_nc.jl")
+# using Colors, Plots
 
 clima_file = "/mnt/g/CLIMA/clima_land_2019_1X_1H.hs.nc";
-year       = 2019
 output_nc  = "/mnt/g/ChloFluo/input/yield/1deg/yield.2019.8-day.1deg.nc";
+y          = 2019;
+var_sname  = "SIFyield";
+var_lname  = "Quantum Yield of Fluorescence";
+unit       = "mJ nm-1 sr-1 umol-1";
 
 function calc_yield(infile)
     sif  = Dataset(infile)["SIF740"][:,:,:];
     apar = Dataset(infile)["APAR"][:,:,:];
 
+    # We need to 'correct' the values at 1 degree to match the gridded TROPOMI SIF values
+    # The CLIMA run assumes 0 SIF for non-land and non-veg, but the gridded SIF data 
+    # treats area with no SIF to be NaN
+    zoom = 1; # spatial resolution is 1/zoom degree
+    pft_cover   = load_LUT(PFTPercentCLM{Float32}(), zoom);
+    land_cover  = load_LUT(LandMaskERA5{Float32}(), zoom, nan_weight = true);
+    corr_factor = min.(land_cover.data[:,:,1], 1 .- pft_cover.data[:,:,1] ./ 100);
+
+    sif = sif ./ corr_factor
     apar  = apar .* 1000000; # umol/m2/s1
     yield = sif ./ apar;
 
@@ -94,12 +107,12 @@ function calc_yield(infile)
 
     yield_8day = reverse(mapslices(rotl90, yield_8day, dims = [1,2]), dims = 1);  # Rotate and reverse to correct lat/lon
 
-    return(yield_8day)
+    save_nc(yield_8day, output_nc, y, var_sname, var_lname, unit)
 end
 
-yield = calc_yield(clima_file);
-
-save_nc(yield, output_nc)
+calc_yield(clima_file);
 
 # Take a look
-heatmap(yield[:,:,1], bg = :white, color = :viridis)
+# heatmap(sif[:,:,1], bg = :white, color = :viridis)
+
+

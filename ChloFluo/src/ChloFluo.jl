@@ -10,7 +10,7 @@
 
 using NCDatasets
 using Statistics
-# using Colors, Plots
+using Colors, Plots
 include("save/save_nc.jl")
 
 apar_file   = "/mnt/g/ChloFluo/input/APARchl/1deg/apar.2019.8-day.1deg.nc";
