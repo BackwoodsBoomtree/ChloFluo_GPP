@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# Calculate Average Daytime Temperature for each year for Tscalar 
+# Calculate Average Daytime Temperature for Tscalar 
 #
 # Input are ERA5 2m air temperature data, which are hourly.
 # Source:
@@ -10,8 +10,6 @@
 #
 ###############################################################################
 
-input_nc  = "/mnt/g/ChloFluo/input/Temp/era/Temp.ERA.2018.nc";
-output_nc = "/mnt/g/ChloFluo/input/Temp/daytime/25km/8day/Temp.mean.daytime.8day.era.25km.2018.nc";
 
 # Get mean daytime temperature for each day from hourly data 
 function calc_temp_day(infile::String)
@@ -81,9 +79,3 @@ function calc_temp_day(infile::String)
 
     return(temp_8day)
 end
-
-temp_out = calc_temp_day(input_nc)
-save_nc(input_nc, temp_out, output_nc)
-
-# Take a look
-#heatmap(temp_out[:,:,23], bg = :white, color = :viridis)

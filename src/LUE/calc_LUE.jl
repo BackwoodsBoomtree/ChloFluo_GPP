@@ -28,7 +28,7 @@ function calc_luemax(map)
     lue = (c4_perc .* 0.117) + ((1 .- c4_perc) .* 0.078)
 
     println("LUEmax has been calculated.")
-    return(lue)
+    return lue
 end
 
 
