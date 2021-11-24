@@ -8,13 +8,6 @@
 #
 ###############################################################################
 
-using NCDatasets
-using DataStructures
-using Statistics
-using GriddingMachine
-include("../../save/save_nc.jl")
-# using Colors, Plots
-
 clima_file = "/mnt/g/CLIMA/clima_land_2019_1X_1H.hs.nc";
 output_nc  = "/mnt/g/ChloFluo/input/yield/1deg/yield.2019.8-day.1deg.nc";
 y          = 2019;
