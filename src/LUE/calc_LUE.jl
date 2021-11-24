@@ -2,22 +2,13 @@
 #
 # Determine LUEmax
 #
-# Input is MCD12C1 and ISLSCP II
-#
-# Output is one file for each year for each Topt, Tmin, and Tmax.
+# Input is ISLSCP II
 #
 # Note: ISLSCP map saved to nc using qgis.
 #       Might be improved in future for higher resolution using cropland maps,
 #       i.e., VPM and Earth Stats
 #
 ###############################################################################
-
-c4_map     = "/mnt/g/ChloFluo/input/C3C4/ISLSCP/c4_percent_1d.nc";
-output_nc = "/mnt/g/ChloFluo/input/LUE/1deg/LUEmax.1deg.nc";
-y           = 2019;
-var_sname   = "LUEmax";
-var_lname   = "Maximum Light Use Efficiency";
-unit        = "g C / mol";
 
 # Possible future use
 # input_hdf  = "/mnt/g/ChloFluo/input/landcover/mcd12c1/MCD12C1.A2018001.006.2019200161458.hdf";
@@ -36,11 +27,8 @@ function calc_luemax(map)
 
     lue = (c4_perc .* 0.117) + ((1 .- c4_perc) .* 0.078)
 
-    save_nc(lue, output_nc, y, var_sname, var_lname, unit)
+    println("LUEmax has been calculated.")
+    return(lue)
 end
 
-calc_luemax(c4_map)
-
-# Take a look
-# heatmap(lue, bg = :white, color = :viridis)
 

@@ -8,12 +8,6 @@
 #
 ###############################################################################
 
-clima_file = "/mnt/g/CLIMA/clima_land_2019_1X_1H.hs.nc";
-output_nc  = "/mnt/g/ChloFluo/input/yield/1deg/yield.2019.8-day.1deg.nc";
-y          = 2019;
-var_sname  = "SIFyield";
-var_lname  = "Quantum Yield of Fluorescence";
-unit       = "mJ nm-1 sr-1 umol-1";
 
 function calc_yield(infile)
     sif  = Dataset(infile)["SIF740"][:,:,:];
@@ -22,6 +16,7 @@ function calc_yield(infile)
     # We need to 'correct' the values at 1 degree to match the gridded TROPOMI SIF values
     # The CLIMA run assumes 0 SIF for non-land and non-veg, but the gridded SIF data 
     # treats area with no SIF to be NaN
+    println("Adjusting SIF values for area.")
     zoom = 1; # spatial resolution is 1/zoom degree
     pft_cover   = load_LUT(PFTPercentCLM{Float32}(), zoom);
     land_cover  = load_LUT(LandMaskERA5{Float32}(), zoom, nan_weight = true);
@@ -100,12 +95,5 @@ function calc_yield(infile)
 
     yield_8day = reverse(mapslices(rotl90, yield_8day, dims = [1,2]), dims = 1);  # Rotate and reverse to correct lat/lon
 
-    save_nc(yield_8day, output_nc, y, var_sname, var_lname, unit)
+    return(yield_8day)
 end
-
-calc_yield(clima_file);
-
-# Take a look
-# heatmap(sif[:,:,1], bg = :white, color = :viridis)
-
-
