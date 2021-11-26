@@ -6,7 +6,7 @@ cd /home/boomtree/Git/ChloFlo/ChloFluo_GPP/ChloFluo/src/aggregate
 
 # Daytime Mean Temp
 # Permute if needed:
-ncpdq -a time,lat,lon /mnt/g/ChloFluo/input/Temp/daytime/25km/8day/Temp.mean.daytime.8day.era.25km.2020.nc /mnt/g/ChloFluo/input/Temp/daytime/25km/8day/Temp.mean.daytime.8day.era.25km.2020.nc
+ncpdq -a time,lat,lon /mnt/g/ChloFluo/input/Temp/daytime/25km/8day/Temp.mean.daytime.8day.era.25km.2019.nc /mnt/g/ChloFluo/input/Temp/daytime/25km/8day/Temp.mean.daytime.8day.era.25km.2019.nc
 
 cdo -b f32 remapcon,gridfile_1.0.txt /mnt/g/ChloFluo/input/Temp/daytime/25km/8day/Temp.mean.daytime.8day.era.25km.2020.nc /mnt/g/ChloFluo/input/Temp/daytime/1deg/8day/Temp.mean.daytime.8day.era.1deg.2020.nc
 

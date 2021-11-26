@@ -14,7 +14,7 @@
 # Get mean daytime temperature for each day from hourly data 
 function calc_temp_day(infile::String)
 
-    temp_data = Dataset(infile)["t2m"]
+    temp_data = Dataset("/mnt/g/ChloFluo/input/Temp/era/Temp.ERA.2018.nc")["t2m"]
 
     # Calculates daytime temp for each day
     temp_daytime = zeros(Float32, size(temp_data)[1], size(temp_data)[2], Int(size(temp_data)[3] / 24));

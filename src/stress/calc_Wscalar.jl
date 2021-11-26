@@ -8,18 +8,14 @@
 # Output is one file for each year.
 #
 ###############################################################################
+using Plots, Colors
 
-lswi_nc    = "/mnt/g/ChloFluo/input/LSWI/1deg/MCD43C4.A.2018.LSWI.8-day.1deg.nc";
-lswimax_nc = "/mnt/g/ChloFluo/input/LSWImax/1deg/LSWImax.8-day.1deg.2018.nc";
-output_nc  = "/mnt/g/ChloFluo/input/wscalar/1deg/wscalar.8-day.1deg.2018.nc";
-
-# Calc wscalar for teach time step and return 3d array
 function calc_wscalar(lswi::String, lswi_max::String)
        
-    lswi     = Dataset(lswi)["LSWI"]
-    lswi_max = Dataset(lswi_max)["LSWImax"]
+    lswi     = Dataset(lswi)["LSWI"][:,:,:]
+    lswi_max = Dataset(lswi_max)["LSWImax"][:,:]
     lswi     = reverse(mapslices(rotl90, lswi, dims = [1,2]), dims = 1)  # Rotate and reverse to correct lat/lon
-    lswi_max = lswi_max[:,:]
+    lswi_max = reverse(rotl90(lswi_max), dims = 1)                       # Rotate and reverse to correct lat/lon
     lswi     = Float32.(replace!(lswi, missing => NaN))
     lswi_max = Float32.(replace!(lswi_max, missing => NaN))
 
@@ -32,12 +28,6 @@ function calc_wscalar(lswi::String, lswi_max::String)
         wscalar_stack[:,:,i]     = wscalar
     end
 
+    println("Water Scalar has been calculated.")
     return(wscalar_stack)
 end
-
-wscalar = calc_wscalar(lswi_nc, lswimax_nc)
-save_nc(lswi_nc, wscalar, output_nc)
-
-# Take a look
-# heatmap(lswi[:,:,20], clim = (-0.5, 0.5), bg = :white, color = :viridis)
-# heatmap(wscalar_stack[:,:,20], bg = :white, color = :viridis)

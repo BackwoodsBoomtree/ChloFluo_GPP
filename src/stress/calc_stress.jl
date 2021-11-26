@@ -8,19 +8,14 @@
 #
 ###############################################################################
 
-tfile     = "/mnt/g/ChloFluo/input/tscalar/1deg/tscalar.8-day.1deg.2020.nc";
-wfile     = "/mnt/g/ChloFluo/input/wscalar/1deg/wscalar.8-day.1deg.2020.nc";
-output_nc = "/mnt/g/ChloFluo/input/stress/1deg/stress.8-day.1deg.2020.nc";
-
-# Calc wscalar for teach time step and return 3d array
 function calc_stress(tscalar, wscalar)
 
-    tscalar = Dataset(tscalar)["tscalar"]
-    wscalar = Dataset(wscalar)["wscalar"]
+    tscalar = Dataset(tscalar)["tscalar"][:,:,:]
+    wscalar = Dataset(wscalar)["wscalar"][:,:,:]
 
     # Need to permute because they are imported in [z,y,x] format from nc
-    tscalar = permutedims(tscalar, [2,3,1])
-    wscalar = permutedims(wscalar, [2,3,1])
+    tscalar = reverse(mapslices(rotl90, tscalar, dims = [1,2]), dims = 1)  # Rotate and reverse to correct lat/lon
+    wscalar = reverse(mapslices(rotl90, wscalar, dims = [1,2]), dims = 1)  # Rotate and reverse to correct lat/lon
 
     stress_stack = zeros(Float32, size(tscalar))
     for i in 1:size(tscalar)[3]
@@ -31,11 +26,6 @@ function calc_stress(tscalar, wscalar)
         stress_stack[:,:,i]    = stress
     end
   
+    println("Stress calculated.")
     return(stress_stack)
 end
-
-stress = calc_stress(tfile, wfile)
-save_nc(tfile, stress, output_nc);
-
-# Take a look
-heatmap(stress[:,:,23], bg = :white, color = :viridis)

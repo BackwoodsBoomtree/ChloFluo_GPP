@@ -22,5 +22,6 @@ function tparams(infile::String)
     minT_map = [LUTminT[value] for value in land];
     maxT_map = [LUTmaxT[value] for value in land];
 
+    println("Topt, Tmin, and Tmax have been mapped.")
     return optT_map, minT_map, maxT_map
 end

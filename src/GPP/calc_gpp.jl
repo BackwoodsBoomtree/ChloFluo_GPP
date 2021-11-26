@@ -8,27 +8,20 @@
 #
 ###############################################################################
 
-apar_file   = "/mnt/g/ChloFluo/input/APARchl/1deg/apar.2019.8-day.1deg.nc";
-stress_file = "/mnt/g/ChloFluo/input/stress/1deg/stress.8-day.1deg.2019.nc";
-lue_file    = "/mnt/g/ChloFluo/input/LUE/1deg/LUEmax.1deg.nc";
-output_nc   = "/mnt/g/ChloFluo/product/v01/1deg/ChloFluo.GPP.v01.1deg.CF80.2019.nc";
-y           = 2019;
-var_sname   = "gpp";
-var_lname   = "Gross Primary Production";
-unit        = "g C/m-2/day-1";
-
-function calc_gpp(apar, stress, lue)
-    apar   = Dataset(apar)["aparchl"]
-    stress = Dataset(stress)["stress"]
-    lue    = Dataset(lue)["LUEmax"]
+function calc_gpp(apar, lue, stress)
+    apar   = Dataset(apar)["aparchl"][:,:,:]
+    lue    = Dataset(lue)["LUEmax"][:,:,:]
+    stress = Dataset(stress)["stress"][:,:,:]
 
     # Arrange rasters dims to match
-    apar   = permutedims(apar, [2,3,1])
+    apar   = reverse(mapslices(rotl90, apar, dims = [1,2]), dims = 1)  # Rotate and reverse to correct lat/lon
+    lue    = reverse(rotl90(lue), dims = 1)  # Rotate and reverse to correct lat/lon
+    stress = reverse(mapslices(rotl90, stress, dims = [1,2]), dims = 1)  # Rotate and reverse to correct lat/lon
+    
     apar   = replace!(apar, missing => NaN)
-    stress = permutedims(stress, [2,3,1])
-    stress = replace!(stress, missing => NaN)
-    lue    = lue[:,:,:]
     lue    = replace!(lue, missing => NaN)
+    stress = replace!(stress, missing => NaN)
+
 
     gpp_stack = zeros(Float32, size(apar))
     for i in 1:size(apar)[3]
@@ -37,10 +30,6 @@ function calc_gpp(apar, stress, lue)
         gpp_stack[:,:,i] = gpp
     end
 
-    save_nc(gpp_stack, output_nc, y, var_sname, var_lname, unit)
+    println("GPP has been computed. You are amazing!")
+    return gpp_stack
 end
-
-calc_gpp(apar_file, stress_file, lue_file);
-
-# Take a look
-# heatmap(lue[:,:,23], bg = :white, color = :viridis)
