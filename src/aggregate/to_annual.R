@@ -15,5 +15,5 @@ writeCDF(annual_mean, "G:/ChloFluo/product/v01/1deg/clipfill/annual/ChloFluo.GPP
          missval = -9999, overwrite = TRUE)
 
 
-annual_mean[annual_mean > 25] <- 25
-plot(annual_mean, col = viridis(25))
+annual_mean[annual_mean > 15] <- 15
+plot(annual_mean, col = viridis(15))
