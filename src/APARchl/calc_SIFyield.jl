@@ -26,36 +26,55 @@ function calc_yield(infile)
     apar  = apar .* 1000000; # umol/m2/s1
     yield = sif ./ apar;
 
-    # Calculates yield for each day
-    yield_daily = zeros(Float32, size(yield)[1], size(yield)[2], Int(size(yield)[3] / 24));
+    # Calculate daily values (APAR units is per second, so need all values including 0)
+    sif_daily   = zeros(Float32, size(sif)[1], size(sif)[2], Int(size(sif)[3] / 24));
+    apar_daily  = zeros(Float32, size(sif)[1], size(sif)[2], Int(size(sif)[3] / 24));
+    yield_daily = zeros(Float32, size(sif)[1], size(sif)[2], Int(size(sif)[3] / 24));
     doy = 0;
 
     for i in 1:24:size(yield)[3]
         doy = doy + 1
         println("Processing daily data for ", doy, " of ", Int(size(yield)[3] / 24))
-        yield_in  = yield[:,:,i:(i+23)]
-        yield_out = zeros(Float32, size(yield_in)[1], size(yield_in)[2])
+        sif_in   = sif[:,:,i:(i+23)]
+        apar_in  = apar[:,:,i:(i+23)]
+
+        sif_out = zeros(Float32, size(sif_in)[1], size(sif_in)[2])
+        apar_out = zeros(Float32, size(apar_in)[1], size(apar_in)[2])
         
         # Get mean for each gridcell in each day
-        for row in 1:size(yield_in)[1] 
-            for col in 1:size(yield_in)[2]
-                vals = zeros(0)
+        for row in 1:size(sif_in)[1] 
+            for col in 1:size(sif_in)[2]
+                sif_vals  = zeros(0)
+                apar_vals = zeros(0)
                 for time in 1:24
-                    val = yield_in[row, col, time]
-                    if !isnan(val)
-                        append!(vals, val)
+                    sif_val  = sif_in[row, col, time]
+                    apar_val = apar_in[row, col, time]
+                    if !isnan(sif_val) && sif_val != 0.0
+                        append!(sif_vals, sif_val)
+                    end
+                    if !isnan(apar_val)
+                        append!(apar_vals, apar_val)
                     end
                 end
-                if length(vals) != 0
-                    mean_val = mean(vals)
+                if length(sif_vals) != 0
+                    mean_sif_val = mean(sif_vals)
                 else
-                    mean_val = NaN
+                    mean_sif_val = NaN
                 end
-                yield_out[row, col] = Float32.(mean_val)
+                if length(apar_vals) != 0
+                    mean_apar_val = mean(apar_vals)
+                else
+                    mean_apar_val = NaN
+                end
+                sif_out[row, col]  = Float32.(mean_sif_val)
+                apar_out[row, col] = Float32.(mean_apar_val)
             end
         end
-        yield_daily[:,:,doy] = yield_out
+        sif_daily[:,:,doy]  = sif_out
+        apar_daily[:,:,doy] = apar_out
     end
+
+    yield_daily = sif_daily ./ apar_daily
 
     # Aggregate to 8-day (works for nonleap and leap years)
     yield_8day = zeros(Float32, size(yield_daily)[1], size(yield_daily)[2], 46);
@@ -78,7 +97,7 @@ function calc_yield(infile)
                 vals = zeros(0)
                 for time in 1:size(yield_in)[3]
                     val = yield_in[row, col, time]
-                    if !isnan(val)
+                    if !isnan(val) && val != 0.0
                         append!(vals, val)
                     end
                 end
