@@ -4,14 +4,14 @@ library(viridis)
 # To get the annual mean for a grid cell, we need to calculate 0 GPP for the time periods
 # where there was an NA.
 
-data <- "G:/ChloFluo/product/v01/1deg/clipfill/ChloFluo.GPP.v01.1deg.CF80.2019.clipfill.nc"
+data <- "G:/ChloFluo/input/SIF/1deg/SIFqc.8day.1deg.CF80.2019.nc"
 
 series <- rast(data)
 
 annual_mean <- mean(series, na.rm = TRUE)
 
-writeCDF(annual_mean, "G:/ChloFluo/product/v01/1deg/clipfill/annual/ChloFluo.GPP.v01.1deg.CF80.2019.clipfill.annual.nc",
-         varname = "gpp", longname = "Gross Primary Production", unit = "g C/m-2/day-1",
+writeCDF(annual_mean, "G:/ChloFluo/input/SIF/1deg/SIFqc.8day.1deg.CF80.2019.annual.nc",
+         varname = "sif743_qc", longname = "SIF743 Quality Controlled", unit = "mW/m-2/sr/nm",
          missval = -9999, overwrite = TRUE)
 
 
